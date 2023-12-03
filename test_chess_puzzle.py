@@ -27,11 +27,11 @@ def test_index2location3():
 def test_index2location4():
     assert index2location(8,8) == "h8"
 def test_index2location5():
-    with pytest.raises(ValueError):
-        location2index(8)
+    with pytest.raises(TypeError):
+        index2location(8)
 def test_index2location6():
-    with pytest.raises(ValueError):
-        location2index(-1,0)
+    with pytest.raises(TypeError):
+        index2location('a',0)
 
 
 wq1 = Queen(4,4,True)
