@@ -20,6 +20,18 @@ def test_location2index6():
 
 def test_index2location1():
     assert index2location(5,2) == "e2"
+def test_index2location2():
+    assert index2location(7,12) != "g21"
+def test_index2location3():
+    assert index2location(26,26) == "z26"
+def test_index2location4():
+    assert index2location(8,8) == "h8"
+def test_index2location5():
+    with pytest.raises(ValueError, match='Invalid location'):
+        location2index(8)
+def test_index2location6():
+    with pytest.raises(IndexError, match='Index out of range'):
+        location2index(-1,0)
 
 
 wq1 = Queen(4,4,True)
