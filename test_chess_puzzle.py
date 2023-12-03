@@ -4,6 +4,19 @@ from chess_puzzle import *
 
 def test_location2index1():
     assert location2index("e2") == (5,2)
+def test_location2index2():
+    assert location2index("c9") != (4,8)
+def test_location2index3():
+    assert location2index("a1") == (1,1)
+def test_location2index4():
+    assert location2index("z26") == (26,26)
+def test_location2index5():
+    with pytest.raises(ValueError, match='Invalid location'):
+        location2index("Invalid")
+def test_location2index6():
+    with pytest.raises(IndexError, match='Index out of range'):
+        location2index("m27")
+
 
 def test_index2location1():
     assert index2location(5,2) == "e2"
