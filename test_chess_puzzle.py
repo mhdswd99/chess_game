@@ -14,7 +14,7 @@ def test_location2index5():
     with pytest.raises(ValueError, match='Invalid location'):
         location2index("Invalid")
 def test_location2index6():
-    with pytest.raises(IndexError, match='Index out of range'):
+    with pytest.raises(ValueError, match='Index out of range'):
         location2index("m27")
 
 
@@ -30,7 +30,7 @@ def test_index2location5():
     with pytest.raises(ValueError, match='Invalid location'):
         location2index(8)
 def test_index2location6():
-    with pytest.raises(IndexError, match='Index out of range'):
+    with pytest.raises(ValueError, match='Index out of range'):
         location2index(-1,0)
 
 

@@ -1,5 +1,6 @@
 def location2index(loc: str) -> tuple[int, int]:
     '''converts chess location to corresponding x and y coordinates'''
+    return (ord(loc[0])-ord("a")+1,int(loc[1:]))
     
 	
 def index2location(x: int, y: int) -> str:
