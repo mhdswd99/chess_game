@@ -53,6 +53,7 @@ bq3 = Queen(1,5,False)
 bq4 = Queen(2,4,False)
 
 B1 = (5, [wq1, wk1, wq2, wq3, bq1, bk1])
+B2 = (5, [wq1, wk1, wq2, bq1, bk1])
 B3 = (5, [wq1, wq4, wk1, wq2, bq1, bq4, bk1])
 """
   ♔  
@@ -123,12 +124,23 @@ def test_can_move_to1():
 def test_can_move_to2():
     assert wq1.can_move_to(3,4, B1) == False
 def test_can_move_to3():
-    assert bq4.can_move_to(4,4, B3) == False
+    assert bq4.can_move_to(4,4, B3) == True
 def test_can_move_to4():
     assert wq1.can_move_to(5,4, B1) == False
 def test_can_move_to5():
     assert bq1.can_move_to(3,3, B1) == True
-
+def test_can_move_to6():
+    assert wk1.can_move_to(2,5, B2) == True
+def test_can_move_to7():
+    assert bk1.can_move_to(3,3, B2) == False
+def test_can_move_to8():
+    assert bk1.can_move_to(2,2, B2) == False
+def test_can_move_to8():
+    assert bk1.can_move_to(1,2, B2) == True
+def test_can_move_to9():
+    assert wk1.can_move_to(2,4, B2) == False
+def test_can_move_to10():
+    assert wk1.can_move_to(4,5, B2) == True
 
 """
   ♔  
@@ -142,39 +154,40 @@ def test_move_to1():
 
     Actual_B = wq2.move_to(3,4, B1)
     Expected_B = (5, [wq1, wk1, wq2a, wq3, bq1, bk1])
+    assert Actual_B[0] == 5
     #check if actual board has same contents as expected 
     assert(equal_lists(Actual_B,Expected_B))==True
+    wq2.move_to(3,1,B1) #revert back the piece to intial position
 
 def test_move_to2():
     wq1a = Queen(5,5, True)
 
     Actual_B = wq1.move_to(5,5, B1)
     Expected_B = (5, [wq1a, wk1, wq2, wq3, bq1, bk1])
+    assert Actual_B[0] == 5
     #check if actual board has same contents as expected 
     assert(equal_lists(Actual_B,Expected_B))==False
+    wq1.move_to(4,4,B1)
 
 def test_move_to3():
     wk1a = King(4,5, True)
 
-    Actual_B = wk1.move_to(4,5, B1)
-    Expected_B = (5, [wq1, wk1a, wq2, wq3, bq1, bk1])
+    Actual_B = wk1.move_to(4,5, B2)
+    Expected_B = (5, [wq1, wk1a, wq2, bq1, bk1])
     #check if actual board has same contents as expected 
     assert Actual_B[0] == 5
+    assert(equal_lists(Actual_B,Expected_B))==True
+    wk1.move_to(3,5,B2)
 
-    for piece1 in Actual_B[1]: #we check if every piece in Actual_B is also present in Expected_B; if not, the test will fail
-        found = False
-        for piece in Expected_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(piece) == type(piece1):
-                found = True
-        assert found
+def test_move_to4():
+    wk1a = King(2,5, True)
 
-
-    for piece in Expected_B[1]:  #we check if every piece in Expected_B is also present in Actual_B; if not, the test will fail
-        found = False
-        for piece1 in Actual_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(piece) == type(piece1):
-                found = True
-        assert found
+    Actual_B = wk1.move_to(2,4, B3) # Attempt to attack bq4
+    Expected_B = (5, [wq1, wq4, wk1a, wq2, bq1, bq4, bk1])
+    #check if actual board has same contents as expected 
+    assert Actual_B[0] == 5
+    assert(equal_lists(Actual_B,Expected_B))==False
+    wk1.move_to(3,5,B2)    
 
 
 def test_is_check1():
@@ -195,10 +208,32 @@ def test_is_check5():
 def test_is_check6():
     B2 = (6, [wq1, wk1, wq2, bq1, bq2, bk1])
     assert is_check(True, B2) == True
-
+"""
+  ♔ ♛ 
+    ♛
+ ♚   ♛
+     
+  ♕          ♕♛ 
+"""
 def test_is_checkmate1():
     B2 = (5, [wk1, wq2, bq1, bk1])
     assert is_checkmate(True, B2) == False
+def test_is_checkmate2():
+    bq2 = Queen(4,5,False)
+    B2 = (5, [wk1, wq2, bq1, bq2, bk1])
+    assert is_checkmate(True, B2) == False
+def test_is_checkmate3():
+    wq3 = Queen(4,5,True)
+    B2 = (7, [wq1, wk1, wq2, wq3, bq1, bk1])
+    assert is_checkmate(False, B2) == True
+def test_is_checkmate4():
+    B2 = (7, [wq1, wk1, wq2, bq1, bk1])
+    assert is_checkmate(False, B2) == False
+def test_is_checkmate5():
+    bq2 = Queen(4,5,False)
+    bq3 = Queen(5,4,False)
+    B2 = (5, [wk1, wq2, bq1, bq2, bq3, bk1])
+    assert is_checkmate(True, B2) == True
 
 def test_read_board1():
     B = read_board("board_examp.txt")
