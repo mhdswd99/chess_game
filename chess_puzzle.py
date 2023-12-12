@@ -195,9 +195,8 @@ def is_checkmate(side: bool, B: Board) -> bool:
                     for j in range (1,B[0]+1):
                         if piece.can_move_to(i, j, B):
                             new_board = piece.move_to(i, j, B)
-                            if is_check(side, new_board):
-                                return True
-                            return False                  
+                            if not is_check(side, new_board):
+                                return False                  
     return True
 
 
@@ -209,12 +208,58 @@ def is_stalemate(side: bool, B: Board) -> bool:
     - use is_check
     - use can_move_to 
     '''
+    if is_check(side,B):    return False
+    for piece in B[1]:
+        if piece.side == side:
+            for i in range (1,B[0]+1):
+                for j in range (1,B[0]+1):
+                    if piece.can_move_to(i,j,B):
+                        return False
+    return True
 
 def read_board(filename: str) -> Board:
     '''
     reads board configuration from file in current directory in plain format
     raises IOError exception if file is not valid (see section Plain board configurations)
     '''
+    k=1
+    side=None
+    all_pieces=[]
+    with open(filename,'r') as fp:
+        S=fp.readline().rstrip()
+        if not S.isnumeric():
+            raise IOError
+        s=int(S)
+        if s<1 or s>26:
+            raise IOError
+        while k<3:
+            if k==1:    side=True
+            else:   side=False
+            lines=fp.readline().rstrip()
+            if not lines:
+                raise IOError
+            pieces=[]
+            for piece in lines.split(", "):
+                pieces.append(piece.strip())
+            num_king = 0
+            for j in pieces:
+                if not (j.startswith('K')or j.startswith('Q')):
+                    raise IOError
+                piece_class,pos = j[0],j[1:]
+                ind=location2index(pos)
+                if piece_class=='K':
+                    all_pieces.append(King(ind[0],ind[1],side))
+                    num_king+=1
+                elif piece_class=='Q':
+                    all_pieces.append(Queen(ind[0],ind[1],side))
+            if num_king!=1:
+                raise IOError
+            k+=1
+        incorrect_lines=fp.readline().strip()
+        if incorrect_lines:
+            raise IOError
+    return (s,all_pieces)
+
 
 def save_board(filename: str, B: Board) -> None:
     '''saves board configuration into file in current directory in plain format'''
@@ -245,4 +290,5 @@ def main() -> None:
 
 if __name__ == '__main__': #keep this in
    main()
+
 
