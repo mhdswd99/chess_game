@@ -189,7 +189,6 @@ def test_move_to4():
     assert(equal_lists(Actual_B,Expected_B))==False
     wk1.move_to(3,5,B2)    
 
-
 def test_is_check1():
     B2 = (5, [wk1, wq2, bq1, bk1])
     assert is_check(True, B2) == True
@@ -230,28 +229,75 @@ def test_is_checkmate4():
     B2 = (7, [wq1, wk1, wq2, bq1, bk1])
     assert is_checkmate(False, B2) == False
 def test_is_checkmate5():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
     bq2 = Queen(4,5,False)
     bq3 = Queen(5,4,False)
     B2 = (5, [wk1, wq2, bq1, bq2, bq3, bk1])
     assert is_checkmate(True, B2) == True
+def test_is_checkmate6(): #the king can escape the cm only if bq2 eliminates wq1
+    bk1=King(3,4,False)
+    bq1=Queen(4,3,False)
+    bq2=Queen(6,3,False)
+    wk1=King(1,4,True)
+    wq1=Queen(3,6,True)
+    wq2=Queen(6,6,True)
+    B4=(6,[bk1,bq1,bq2,wk1,wq1,wq2])
+    assert is_checkmate(False,B4) == False
+def test_is_stalemate1():
+    wk1=King(4,5,True)
+    bq1=Queen(3,3,False)
+    bk1=King(5,3,False)
+    B=(5,[wk1,bq1,bk1])
+    assert is_stalemate(True,B) == True
+def test_is_stalemate2():
+    bk1=King(1,1,False)
+    wk1=King(3,3,True)
+    wq1=Queen(3,2,True)
+    B=(3,[bk1,wk1,wq1])
+    assert is_stalemate(False,B) == True
+def test_is_stalemate3():
+    bk1=King(1,1,False)
+    wk1=King(3,3,True)
+    wq1=Queen(2,2,True)
+    B=(3,[bk1,wk1,wq1])
+    assert is_stalemate(False,B1) == False
+def test_is_stalemate3():
+    bk1=King(1,1,False)
+    wk1=King(3,3,True)
+    wq1=Queen(3,2,True)
+    B=(3,[bk1,wk1,wq1])
+    assert is_stalemate(True,B) == False
+def test_is_stalemate4():
+    assert is_stalemate(False,B1) == False
+def test_is_stalemate5():
+    bk1=King(6,6,False)
+    wq1=Queen(4,5,True)
+    wk1=King(3,4,True)
+    B=(6,[bk1,wk1,wq1])
+    assert is_stalemate(False,B) == True
+def test_is_stalemate6():
+    bk1=King(6,6,False)
+    bq1=Queen(1,3,False)
+    wq1=Queen(4,5,True)
+    wk1=King(3,4,True)
+    B=(6,[bk1,bq1,wk1,wq1])
+    assert is_stalemate(False,B) == False
 
 def test_read_board1():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
     B = read_board("board_examp.txt")
+    B1 = (5, [wk1, wq1, wq2, wq3, bk1, bq1])
     assert B[0] == 5
-
-    for piece in B[1]:  #we check if every piece in B is also present in B1; if not, the test will fail
-        found = False
-        for piece1 in B1[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(piece) == type(piece1):
-                found = True
-        assert found
-
-    for piece1 in B1[1]: #we check if every piece in B1 is also present in B; if not, the test will fail
-        found = False
-        for piece in B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(piece) == type(piece1):
-                found = True
-        assert found
+    assert(equal_lists(B,B1))==True
+def test_read_board2():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    B = read_board("example1.txt")
+    B1 = (5, [wk1, wq1, wq2, wq3, bk1, bq1])
+    with pytest.raises(OSError):
+        assert(equal_lists(B,B1))==True
 
 
 def test_conf2unicode1():
