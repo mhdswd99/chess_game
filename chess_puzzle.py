@@ -385,26 +385,26 @@ def main() -> None:
                     print('This is not a valid move. ',end='')
                 else:
                     if from_piece.can_move_to(to_move[0],to_move[1],B):
-                        from_piece.move_to(to_move[0],to_move[1],B)
+                        B1=from_piece.move_to(to_move[0],to_move[1],B)
                     elif not from_piece.can_move_to(to_move[0],to_move[1],B):
                         print('This is not a valid move. ',end='')
                     print("The configuration after White's move is:")
-                    print(conf2unicode(B))
-                    if is_checkmate(False,B):
+                    print(conf2unicode(B1))
+                    if is_checkmate(False,B1):
                         print("Game over. White wins.")
                         break
-                    elif is_stalemate(False,B):
+                    elif is_stalemate(False,B1):
                         print("Game over. Stalemate.")
                         break
-                    black_peice=find_black_move(B)
-                    black_peice[0].move_to(black_peice[1],black_peice[2],B)
+                    black_peice=find_black_move(B1)
+                    B2=black_peice[0].move_to(black_peice[1],black_peice[2],B1)
                     black_pos=index2location(black_peice[1],black_peice[2])
                     print(f"Next move of Black is {black_pos}.The configuration after Black's move is:")
-                    print(conf2unicode(B))
-                    if is_checkmate(True,B):
+                    print(conf2unicode(B2))
+                    if is_checkmate(True,B2):
                         print("Game over. Black wins.")
                         break
-                    elif is_stalemate(True,B):
+                    elif is_stalemate(True,B2):
                         print("Game over. Stalemate.")
                         break
                     
@@ -415,5 +415,3 @@ def main() -> None:
 
 if __name__ == '__main__': #keep this in
    main()
-
-
