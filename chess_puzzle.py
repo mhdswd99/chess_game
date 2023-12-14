@@ -1,5 +1,7 @@
 import copy
 from random import randint
+from random import choice
+import sys
 
 def location2index(loc: str) -> tuple[int, int]: #might need to add !isalpha exception?
     '''converts chess location to corresponding x and y coordinates'''
@@ -107,6 +109,8 @@ class Queen(Piece):
         assumes this move is valid according to chess rules
         '''
         if self.can_move_to(pos_X, pos_Y, B):
+            if is_piece_at(pos_X, pos_Y, B):
+                B[1].remove(piece_at(pos_X, pos_Y, B))
             self.pos_x=pos_X
             self.pos_y=pos_Y
             copied_board = (B[0], B[1].copy())
@@ -128,8 +132,6 @@ class King(Piece):
             if piece_at(pos_X, pos_Y, B).side == self.side:
                 return False
         if abs(self.pos_x-pos_X) <=1 and abs(self.pos_y-pos_Y) <=1 and (self.pos_x,self.pos_y)!=(pos_X,pos_Y):
-            if is_piece_at(pos_X, pos_Y, B) and piece_at(pos_X,pos_Y,B).side==False:
-                return False
             return True
         return False
     def can_move_to(self, pos_X : int, pos_Y : int, B: Board) -> bool:
@@ -156,6 +158,8 @@ class King(Piece):
         assumes this move is valid according to chess rules
         '''
         if self.can_move_to(pos_X, pos_Y, B):
+            if is_piece_at(pos_X, pos_Y, B):
+                B[1].remove(piece_at(pos_X, pos_Y, B))
             self.pos_x=pos_X
             self.pos_y=pos_Y
             copied_board = (B[0], B[1].copy())
@@ -263,7 +267,26 @@ def read_board(filename: str) -> Board:
 
 def save_board(filename: str, B: Board) -> None:
     '''saves board configuration into file in current directory in plain format'''
-
+    with open (filename, "w") as fp:
+        white_pieces=[]
+        black_pieces=[]
+        fp.write(str(B[0])+"\n")
+        for piece in B[1]:
+            if piece.side==True:
+                if isinstance(piece,Queen):
+                    white_pieces.append('Q'+index2location(piece.pos_x,piece.pos_y))
+                elif isinstance(piece,King):
+                    white_pieces.append('K'+index2location(piece.pos_x,piece.pos_y))
+            elif piece.side==False:
+                if isinstance(piece,Queen):
+                    black_pieces.append('Q'+index2location(piece.pos_x,piece.pos_y))
+                elif isinstance(piece,King):
+                    black_pieces.append('K'+index2location(piece.pos_x,piece.pos_y))
+        white_pieces=", ".join(white_pieces) 
+        black_pieces=", ".join(black_pieces)
+        fp.write(white_pieces)
+        fp.write("\n")
+        fp.write(black_pieces)
 
 def find_black_move(B: Board) -> tuple[Piece, int, int]:
     '''
@@ -274,10 +297,39 @@ def find_black_move(B: Board) -> tuple[Piece, int, int]:
     - use methods of random library
     - use can_move_to
     '''
+    black_pieces=[]
+    for piece in B[1]:
+        if piece.side==False:
+            black_pieces.append(piece)
+    while True:
+        random_piece=choice(black_pieces)
+        x=randint(1,B[0])
+        y=randint(1,B[0])
+        if random_piece.can_move_to(x,y,B):
+            return (random_piece,x,y)
 
 def conf2unicode(B: Board) -> str: 
     '''converts board cofiguration B to unicode format string (see section Unicode board configurations)'''
-
+    playing_board=''
+    for i in range(B[0],0,-1):
+        for j in range(1,B[0]+1):
+            occupied_space=piece_at(j,i,B)
+            if occupied_space:
+                if isinstance(occupied_space,Queen):
+                    if occupied_space.side:
+                        playing_board+='♕'
+                    else:
+                        playing_board+='♛'
+                elif isinstance(occupied_space,King):
+                    if occupied_space.side:
+                        playing_board+='♔'
+                    else:
+                        playing_board+='♚'
+            else:
+                playing_board+='\u2001'
+        playing_board+='\n'
+    return playing_board
+    
 
 def main() -> None:
     '''
@@ -286,7 +338,80 @@ def main() -> None:
     Hint: implementation of this could start as follows:
     filename = input("File name for initial configuration: ")
     ...
-    '''    
+    '''
+    while True:
+        try:
+            filename = input("File name for initial configuration: ")
+            if filename=='Quit':# sys which is imported from python standard library https://docs.python.org/3/library/sys.html
+                sys.exit()
+            else:    
+                B=read_board(filename)
+                break
+        except IOError as e:
+            print("This is not a valid file. ",end='')
+    print(f"The initial configuration is:\n{conf2unicode(B)}")  
+
+    while True:
+        white_move=input("Next move of White: ")
+        for i in range(len(white_move)):
+            if white_move[i].isalpha():
+                from_move=white_move[:i]
+                to_move=white_move[i:]
+        if white_move=='Quit':
+            saved_board=input("File name to store the configuration: ")
+            save_board(saved_board,B)
+            print("The game configuration saved.")
+            sys.exit()
+        elif from_move=='' or to_move=='':
+            print('This is not a valid move. ',end='')
+        elif len(from_move)<2 or len(to_move)<2:
+            print('This is not a valid move. ',end='')
+        elif not from_move[0].isalpha() or not from_move[1].isnumeric() or not to_move[0].isalpha() or not to_move[1].isnumeric():
+            print('This is not a valid move. ',end='')
+        elif len(white_move)>6 or len(white_move)<4 :
+            print('This is not a valid move. ',end='')
+        else:
+            from_move=location2index(from_move)
+            to_move=location2index(to_move)
+            if from_move[0]<1 or from_move[1]>B[0] or from_move[1]<1 or from_move[0]>B[0]or to_move[0]<1 or to_move[1]>B[0] or to_move[1]<1 or to_move[0]>B[0]:
+                print('This is not a valid move. ',end='')
+            elif not is_piece_at(from_move[0],from_move[1],B):
+                print('This is not a valid move. ',end='')
+            elif is_piece_at(from_move[0],from_move[1],B):
+                from_piece= piece_at(from_move[0],from_move[1],B)
+                if from_piece.side==False:
+                    print('This is not a valid move. ',end='')
+                elif from_piece.can_move_to(to_move[0],to_move[1],B)==False:
+                    print('This is not a valid move. ',end='')
+                else:
+                    if from_piece.can_move_to(to_move[0],to_move[1],B):
+                        from_piece.move_to(to_move[0],to_move[1],B)
+                    elif not from_piece.can_move_to(to_move[0],to_move[1],B):
+                        print('This is not a valid move. ',end='')
+                    print("The configuration after White's move is:")
+                    print(conf2unicode(B))
+                    if is_checkmate(False,B):
+                        print("Game over. White wins.")
+                        break
+                    elif is_stalemate(False,B):
+                        print("Game over. Stalemate.")
+                        break
+                    black_peice=find_black_move(B)
+                    black_peice[0].move_to(black_peice[1],black_peice[2],B)
+                    black_pos=index2location(black_peice[1],black_peice[2])
+                    print(f"Next move of Black is {black_pos}.The configuration after Black's move is:")
+                    print(conf2unicode(B))
+                    if is_checkmate(True,B):
+                        print("Game over. Black wins.")
+                        break
+                    elif is_stalemate(True,B):
+                        print("Game over. Stalemate.")
+                        break
+                    
+
+            
+        
+        
 
 if __name__ == '__main__': #keep this in
    main()
