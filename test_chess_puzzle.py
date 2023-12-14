@@ -294,11 +294,31 @@ def test_read_board1():
 def test_read_board2():
     wk1 = King(3,5,True)
     wq2 = Queen(3,1,True)
-    B = read_board("example1.txt")
+    B1 = (27, [wk1, wq1, wq2, wq3, bk1, bq1])
+    with pytest.raises(IOError):
+        read_board("example1.txt")
+def test_read_board3():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    B = read_board("example2.txt")
+    B3 = (5, [wq1, wq4, wk1, wq2, bq1, bq4, bk1])
+    assert B[0]!=B3[0]
+    assert(equal_lists(B,B3))==False
+def test_read_board4():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    B = read_board("example3.txt")
+    B3 = (10, [wq1, wq4, wk1, wq2, bq1, bq4, bk1])
+    assert B[0]==B3[0]
+    assert(equal_lists(B,B3))==True
+def test_read_board5():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
     B1 = (5, [wk1, wq1, wq2, wq3, bk1, bq1])
-    with pytest.raises(OSError):
-        assert(equal_lists(B,B1))==True
-
-
+    with pytest.raises(IOError):
+        read_board("example4.txt")
 def test_conf2unicode1():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    B1 = (5, [wk1, wq1, wq2, bk1, bq1])
     assert conf2unicode(B1).rstrip("\n") == "  ♔  \n   ♕ \n ♚  ♛\n     \n  ♕  "
