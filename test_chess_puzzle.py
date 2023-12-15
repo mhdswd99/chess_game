@@ -182,12 +182,42 @@ def test_move_to3():
 def test_move_to4():
     wk1a = King(2,5, True)
 
-    Actual_B = wk1.move_to(2,4, B3) # Attempt to attack bq4
+    Actual_B = wk1.move_to(2,4, B3) # Attempt to attack 
     Expected_B = (5, [wq1, wq4, wk1a, wq2, bq1, bq4, bk1])
     #check if actual board has same contents as expected 
     assert Actual_B[0] == 5
     assert(equal_lists(Actual_B,Expected_B))==False
-    wk1.move_to(3,5,B2)    
+    wk1.move_to(3,5,B2)
+
+def test_move_to5():
+    wq1 = Queen(4,4,True)
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    bq1 = Queen(5,3,False)
+    bk1 = King(2,3,False)
+    B1 = (5, [wk1, wq1, wq2, bk1, bq1])
+    bk1a=King(2,3,False)
+    Actual_B = bk1.move_to(3,3, B1)
+    Expected_B = (5, [wk1, wq1, wq2, bk1a, bq1])
+    #check if actual board has same contents as expected 
+    assert Actual_B[0] == 5
+    assert(equal_lists(Actual_B,Expected_B))==True
+
+def test_move_to6():
+    wq1 = Queen(4,4,True)
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    bq1 = Queen(5,3,False)
+    bk1 = King(2,3,False)
+    B1 = (5, [wk1, wq1, wq2, bk1, bq1])
+    bq1a=Queen(4,4,False)
+    Actual_B = bq1.move_to(4,4, B1)
+    Expected_B = (5, [wk1, wq2, bk1, bq1a])
+    #check if actual board has same contents as expected 
+    assert Actual_B[0] == 5
+    assert(equal_lists(Actual_B,Expected_B))==True  # attacks and captures wq1 and takes it place
+ 
+
 
 def test_is_check1():
     B2 = (5, [wk1, wq2, bq1, bk1])
@@ -317,8 +347,46 @@ def test_read_board5():
     B1 = (5, [wk1, wq1, wq2, wq3, bk1, bq1])
     with pytest.raises(IOError):
         read_board("example4.txt")
+def test_read_board6():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    with pytest.raises(IOError):
+        read_board("no_king.txt")
 def test_conf2unicode1():
     wk1 = King(3,5,True)
     wq2 = Queen(3,1,True)
     B1 = (5, [wk1, wq1, wq2, bk1, bq1])
     assert conf2unicode(B1).rstrip("\n") == "  ♔  \n   ♕ \n ♚  ♛\n     \n  ♕  "
+def test_conf2unicode2():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    bk1 = King (1,1,False)
+    bq1 = Queen(1,3,False)
+    B = (5, [wk1, wq2, bk1, bq1])
+    assert conf2unicode(B).rstrip("\n") == "  ♔  \n     \n♛    \n     \n♚ ♕  "
+def test_conf2unicode3():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    B1 = (5, [wk1, wq1, wq2, bk1, bq1])
+    assert conf2unicode(B1).rstrip("\n") != "  ♔  \n   ♕ \n ♚ ♛ \n     \n  ♕  "
+def test_conf2unicode4():
+    wk1 = King(3,5,True)
+    wq2 = Queen(3,1,True)
+    bk1 = King (1,1,False)
+    bq1 = Queen(1,3,False)
+    B = (5, [wk1, wq2, bk1, bq1])
+    assert conf2unicode(B).rstrip("\n") != "  ♔  \n     \n♛    \n    \n♚ ♕  "
+def test_conf2unicode5():
+    wk1 = King(3,4,True)
+    wq2 = Queen(3,1,True)
+    bk1 = King (1,1,False)
+    bq1 = Queen(1,3,False)
+    B4 = (4, [wk1, wq2, bk1, bq1])
+    assert conf2unicode(B4).rstrip("\n") == "  ♔ \n♛   \n    \n♚ ♕ "
+def test_conf2unicode6():
+    wk1 = King(1,1,True)
+    wq2 = Queen(2,1,True)
+    bk1 = King (1,2,False)
+    bq1 = Queen(2,2,False)
+    B4 = (2, [wk1, wq2, bk1, bq1])
+    assert conf2unicode(B4).rstrip("\n") == "♚♛\n♔♕"
